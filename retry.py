@@ -45,3 +45,19 @@ def get_text(id, max_retries=3):
     
     print(f"无法获取内容，已达到最大重试次数 ({max_retries})")
     return None
+
+# 创建一个字典来存储id和对应的text
+    
+    # data_dict = {}
+
+    # for id in id_list:
+    #     text = get_text(id)
+    #     if text is not None:
+    #         data_dict[id] = text
+
+    # # 将字典写入JSON文件
+    # output_json_file = "output.json"
+    # with open(output_json_file, "w", encoding="utf-8") as json_file:
+    #     json.dump(data_dict, json_file, ensure_ascii=False, indent=4)
+
+    # print(f"写入JSON文件完成: {output_json_file}")
