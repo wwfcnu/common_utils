@@ -1,4 +1,3 @@
-
 import os
 import pandas as pd
 
@@ -10,7 +9,7 @@ from tqdm import tqdm
 
 import requests
 import json
-#from requests_toolbelt.multipart import MultipartEncoder
+from requests_toolbelt.multipart import MultipartEncoder
 import time
 import os
 
@@ -64,27 +63,28 @@ def modelscope_trans(batch_input_sequences):
 # 读取文件
 def read_file(file):
     '''
-    genre_out文件，它的label是去重之后的
+    tags是合并了genres，moods，instruments
 
     '''
 
-    data_list = []
-    with open(file,'r') as f:
-        for line in f:
-            line = line.strip().split("\x01")
-            label = line[0].split("\t")
-            caption_zh = line[1]
-            caption_en = line[2]
+    # 读取CSV文件
+    df = pd.read_csv(file)
 
-            # 创建一个字典来表示当前数据项
-            data_item = {
-                "tags": label,
-                "caption_zh":caption_zh,
-                "caption_en": caption_en
-            }
-            
-            # 将数据项添加到数据列表中
-            data_list.append(data_item)
+    # 定义一个函数，用于处理genres，moods和instruments字段
+    def combine_tags(row):
+        genres = eval(row['genres']) if pd.notna(row['genres']) else []
+        moods = eval(row['moods']) if pd.notna(row['moods']) else []
+        instruments = eval(row['instruments']) if pd.notna(row['instruments']) else []
+        
+        # 合并所有的标签
+        tags = genres + moods + instruments
+        return tags
+
+    # 使用apply函数将处理后的tags字段添加到DataFrame中
+    df['tags'] = df.apply(combine_tags, axis=1)
+
+    # 将DataFrame转换为列表字典
+    data_list = df[['id','description', 'tags']].to_dict(orient='records')
     # 创建最终的JSON数据
     final_data = {"data": data_list}
     return final_data
@@ -158,21 +158,22 @@ def translate_file(batch):
     js_caption = []
     for js in batch:
        
-        # caption = js["text"]     
-        # js_caption.append(caption)
+        caption = js["description"]     
+        js_caption.append(caption)
 
         tags = js["tags"]
         tags_list.append(tags)  
     
 
     # 批次翻译caption
-    # caption_zh = translate_xiaochu_batch(js_caption)
-    # js["caption_zh"] = caption_zh
+    caption_zh = translate_xiaochu_batch(js_caption)
+    print(caption_zh)
+    #js["description_zh"] = caption_zh
 
   
     # 批次翻译label(tag),将多个tags列表相加形成一个列表,每个tags:List
     combined_tags_list = sum(tags_list, [])
-    tags_zh_list = modelscope_trans(combined_tags_list)
+    tags_zh_list = translate_xiaochu_batch(combined_tags_list)
     print(combined_tags_list)
     print(tags_zh_list)
 
@@ -193,13 +194,13 @@ def translate_file(batch):
     # 更新翻译结果
     for i, js in enumerate(batch):
         js["tags_zh"] = restored_tags_list[i]
-        #js["caption_zh"] = caption_zh_list[i]
+        js["description_zh"] = caption_zh[i]
     
     return batch
 
 def split_batch(js_data):
 # 按照字符长度将输入列表分成多个批次
-    batch_size_limit = 100
+    batch_size_limit = 1000
     batches = []
     current_batch = []
     current_length = 0
@@ -226,32 +227,32 @@ def split_batch(js_data):
 
 if __name__ == "__main__":
 
-    splits = ["concepts","genre","instrument","mood","role","audioset"]
-    for split in splits:
-        print(f"正在翻译{split}")
-        data_dict = read_file(f"{split}_out")
+    
+    split = "/mnt/data1/AudioDataset/download/modelscope_trans/shutter/shutter_1.csv"
+    print(f"正在翻译{split}")
+    data_dict = read_file(f"{split}")
 
-        # 访问"data"键的值
-        js_data = data_dict["data"]
+    # 访问"data"键的值
+    js_data = data_dict["data"]
 
-        batches = split_batch(js_data)
-        
-
-
-        translated_file_list = []
-        for batch in tqdm(batches):
-            translated_file = translate_file(batch)
-            translated_file_list.append(translated_file)
-
-        # translated_file_list = []
-        # with concurrent.futures.ThreadPoolExecutor(max_workers = 20) as executor:
-        #     translated_file_list = list(executor.map(translate_file, batches))
+    batches = split_batch(js_data)
+    
 
 
-        #data_dict["data"] = translated_file_list
+    translated_file_list = []
+    for batch in tqdm(batches):
+        translated_file = translate_file(batch)
+        translated_file_list.append(translated_file)
 
-        combined_list = [item for batch in translated_file_list for item in batch]
+    # translated_file_list = []
+    # with concurrent.futures.ThreadPoolExecutor(max_workers = 20) as executor:
+    #     translated_file_list = list(executor.map(translate_file, batches))
 
-        # 创建新的JSON文件并将更新后的数据写入其中
-        with open(f'{split}_modelscope_translate.json', 'w') as file:
-            json.dump(combined_list, file,ensure_ascii=False)
+
+    #data_dict["data"] = translated_file_list
+
+    combined_list = [item for batch in translated_file_list for item in batch]
+
+    # 创建新的JSON文件并将更新后的数据写入其中
+    with open('shutter_modelscope_translate.json', 'w') as file:
+        json.dump(combined_list, file,ensure_ascii=False)
