@@ -3,11 +3,9 @@
 代码工具库，记录一下基础脚本
 
 记录一下目前最新的环境
+```sh
 #!/bin/bash
-# Copyright (c) 2024 Amphion.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
+
 
 conda install ffmpeg -y
 conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia -y
@@ -26,3 +24,4 @@ git+https://github.com/m-bain/whisperx.git # needs torch >= 2.0.0
 # 安装fuansr和modelscope
 本地安装funasr
 pip install modelscope[audio] -f https://modelscope.oss-cn-beijing.aliyuncs.com/releases/repo.html
+```
