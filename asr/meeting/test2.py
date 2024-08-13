@@ -1,3 +1,5 @@
+## match ref_interval和hyp_intervals的区间
+
 def match_intervals_with_text(ref_intervals, ref_texts, hyp_intervals, hyp_texts):
     result = []
     i, j = 0, 0
