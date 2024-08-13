@@ -1,5 +1,30 @@
 ## match ref_interval和hyp_intervals的区间
 
+## 从文件中获取按照start排序后的区间，以及这个区间对应的text，speaker信息
+def get_hyp_interval_text(file):
+    intervals = []
+    texts = []
+    
+    with open(file) as f:
+        for line in f:
+            line = line.strip()
+            line_ = json.loads(line)
+            start = line_['global_start']
+            end = line_['global_end']
+            interval = [start, end]
+            
+            intervals.append((interval, line_['text']))  # Store interval and corresponding text together
+    
+    # Sort the intervals by the start time and maintain text correspondence
+    intervals.sort(key=lambda x: x[0][0])
+    
+    # Separate the sorted intervals and texts
+    sorted_intervals = [interval[0] for interval in intervals]
+    sorted_texts = [interval[1] for interval in intervals]
+    
+    return sorted_intervals, sorted_texts
+
+
 def match_intervals_with_text(ref_intervals, ref_texts, hyp_intervals, hyp_texts):
     result = []
     i, j = 0, 0
