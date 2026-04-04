@@ -6,3 +6,10 @@ bash tools/fst/compile_lexicon_token_fst.sh $dir/dict $dir/tmp $dir/lang
 
 - Step 3: Make TLG
 bash tools/fst/make_tlg.sh $dir/lm $dir/lang $dir/tlg
+
+
+
+
+
+
+https://www.modelscope.cn/models/thuduj12/speech_sensevoice_ngram_lm_zh-en-fst/files
