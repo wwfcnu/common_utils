@@ -25,3 +25,6 @@ git+https://github.com/m-bain/whisperx.git # needs torch >= 2.0.0
 本地安装funasr
 pip install modelscope[audio] -f https://modelscope.oss-cn-beijing.aliyuncs.com/releases/repo.html
 ```
+
+
+modelscope download --model LLM-Research/Meta-Llama-3-8B --local_dir ./Meta-Llama-3-8B --revision master
