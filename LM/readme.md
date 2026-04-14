@@ -13,3 +13,7 @@ bash tools/fst/make_tlg.sh $dir/lm $dir/lang $dir/tlg
 
 
 https://www.modelscope.cn/models/thuduj12/speech_sensevoice_ngram_lm_zh-en-fst/files
+
+
+
+- sensevoice-small:替换<unk>为<blank>
