@@ -16,4 +16,4 @@ https://www.modelscope.cn/models/thuduj12/speech_sensevoice_ngram_lm_zh-en-fst/f
 
 
 
-- sensevoice-small:```sh 替换<unk>为<blank> ```
+- sensevoice-small:``` 替换<unk>为<blank> ```
