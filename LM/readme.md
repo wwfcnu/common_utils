@@ -17,6 +17,7 @@ https://www.modelscope.cn/models/thuduj12/speech_sensevoice_ngram_lm_zh-en-fst/f
 
 
 - sensevoice-small:``` tokens.json,替换<unk>为<blank> ```
+- 构建流程脚本：https://github.com/duj12/FunASR/blob/svs-tlg/runtime/tools/train_compile_ngram_svs.sh
 
 
 ```sh
